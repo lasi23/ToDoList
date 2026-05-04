@@ -4,13 +4,8 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
-function ToDo() {
-  return <ul>
-    <li>Sport</li>
-    <li>Dessin</li>
-    <li>Révision</li>
-    <li>Lire</li>
-  </ul>
+function ToDo({ todo, date }) {  
+  return <li>{todo} {date}</li> 
 }
 
 function App() {
@@ -18,9 +13,12 @@ function App() {
   
   return <>
   <h1>Nouvelle ToDO</h1>
-  <h2>Créer le :</h2>
-    <p>{DATE.toLocaleString()}</p>
-    <ToDo />
+  <h2>{DATE.toLocaleString()}</h2>
+    <ul>
+      <ToDo todo={'faire la vaisselle' } date={"24/11/2026"}/>
+      <ToDo todo={'faire la révolution' } date={"24/10/2026"}/>
+      <ToDo todo={'faire la sieste' } date={"24/12/2026"}/>
+    </ul>
   </> 
 }
 
