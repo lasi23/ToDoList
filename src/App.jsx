@@ -21,11 +21,30 @@ const TODOS = [
 
 
 
-function ToDo({ todo, date, checked}) {  
+function ToDo({ todo, date, checked, onClick}) { 
+  function handleClick(todo){
+    alert(todo)
+  }
   if(checked){
-    return <li className="green"><input type="checkbox" defaultChecked/>{todo} {date} </li> 
+    return <li className="green" onClick={()=>handleClick(todo)}><input type="checkbox" defaultChecked/>{todo} {date} </li> 
   }
   return <li className="orange">{todo} {date}</li>
+}
+
+function Form({onSubmit}){
+  function handleChange(e){
+    console.log(e.target.value)
+  }
+  function handleSubmit(e){
+    e.preventDefault()
+    const INPUTS = document.querySelectorAll('input[type=text]')
+    INPUTS.forEach(input=>(console.log(input.value)))
+  }
+  return <form onSubmit={handleSubmit}>
+    <input onChange={e=>handleChange(e)} type='text' placeholder='La ToDO' />
+    <input onChange={e=>handleChange(e)} type='text' placeholder='La Date'/>
+    <input type='submit'/>
+  </form>
 }
 
 function ToDoTernaire({todo, date, checked}) {
@@ -46,7 +65,7 @@ function App() {
   const LIST_TODO = []
 
   TODOS.forEach((todo, index)=> {
-    LIST_TODO.push(<ToDoAnd key={index} todo={todo.todo} date={todo.date} checked={todo.checked}/>)
+    LIST_TODO.push(<ToDo key={index} todo={todo.todo} date={todo.date} checked={todo.checked}/>)
   })
   
   return <> 
@@ -56,6 +75,7 @@ function App() {
       
       {LIST_TODO}
     </ul>
+    <Form onSubmit={e=>handleSubmit(e)}/>
     
   </> 
 }
