@@ -4,32 +4,69 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
+
 const TODOS = [
     { todo : "conquerir le monde",
       date : "24/11/2026",
-      checked : true
+      checked : true,
+      heure : 0,
+      category : 'mission'
     },
     { todo : "obtenir mon stage",
       date : "29/12/2026",
-      checked : true
+      checked : true,
+      heure : 0,
+      category : 'professionel'
     },
     { todo : "retourner au mexique",
       date : "01/01/2027",
-      checked : false
+      checked : false,
+      heure : 0,
+      category : 'vacance'
     }
   ]
 
+function ToDo({ todo, heureRestante, onClick }) {
 
+  const [heure, setHeure] = useState( heureRestante )
 
-function ToDo({ todo, date, checked, onClick}) { 
-  function handleClick(todo){
-    alert(todo)
+  
+
+  function handleClick() {
+    // alert(todo.todo)
   }
-  if(checked){
-    return <li className="green" onClick={()=>handleClick(todo)}><input type="checkbox" defaultChecked/>{todo} {date} </li> 
+  function handleClickMinus(){
+    if (heure > 0){
+      setHeure(heure - 1)   
   }
-  return <li className="orange">{todo} {date}</li>
 }
+  function handleClickPlus(){
+    setHeure(heure + 1)
+  }
+
+  if (todo.checked) {
+    return (
+      <li className='green' onClick={handleClick}>
+        <input type='checkbox' defaultChecked />
+        <button onClick={handleClickMinus}>-</button>
+        {heure}  
+        <button onClick={handleClickPlus}>+</button>
+        {todo.todo} - {todo.date} - {todo.category} à faire dans : {heure} 
+      </li>
+    )
+  }
+  return <li className='orange' onClick={handleClick}>{todo.todo} - {todo.date} - {todo.category}</li>
+}
+
+function Category({mission, setMission, professionel, setProfessionel, vacance, setVacance}){
+  return <section>
+      <label><input type="checkbox" checked={mission} onChange={()=>setMission(!mission)}/> mission</label>
+      <label><input type="checkbox" checked={professionel} onChange={()=>setProfessionel(!professionel)}/> professionel</label>
+      <label><input type="checkbox" checked={vacance} onChange={()=>setVacance(!vacance)}/> vacance</label>
+    </section> 
+}
+
+
 
 function Form({onSubmit}){
   function handleChange(e){
@@ -47,37 +84,47 @@ function Form({onSubmit}){
   </form>
 }
 
-function ToDoTernaire({todo, date, checked}) {
-  return <li className={checked ? "green" : 'orange'} ><input type='checkbox' checked={checked} defaultChecked/>{todo} {date} </li> 
-}
+// function ToDoTernaire({todo, date, checked}) {
+//   return <li className={checked ? "green" : 'orange'} ><input type='checkbox' checked={checked} defaultChecked/>{todo} {date} </li> 
+// }
 
-function ToDoAnd({todo, date, checked}){
-  return <li>
-    {todo} {date}
-    {checked && (
-      <input type="checkbox" defaultChecked />
-    )}   
-  </li>
-}
+// function ToDoAnd({todo, date, checked}){
+//   return <li>
+//     {todo} {date}
+//     {checked && (
+//       <input type="checkbox" defaultChecked />
+//     )}   
+//   </li>
+// }
 
 function App() {
-  const DATE = new Date();
-  const LIST_TODO = []
+  const DATE = new Date()
+  const [vacance, setVacance] = useState(true)
+  const [mission, setMission] = useState(true)
+  const [professionel, setProfessionel] = useState(true)
 
-  TODOS.forEach((todo, index)=> {
-    LIST_TODO.push(<ToDo key={index} todo={todo.todo} date={todo.date} checked={todo.checked}/>)
+  const TODOLIST = TODOS.filter(e => {
+    if (e.category == 'vacance' && !vacance) return false
+    if (e.category == 'professionel' && !professionel) return false
+    if (e.category == 'mission' && !mission) return false
+    return true
   })
-  
-  return <> 
-  <h1>Nouvelle ToDO</h1>
-  <h2>{DATE.toLocaleString()}</h2>
-    <ul>
-      
-      {LIST_TODO}
-    </ul>
-    <Form onSubmit={e=>handleSubmit(e)}/>
-    
-  </> 
+
+  const LIST_TODO = TODOLIST.map((todo, index) => (
+    <ToDo key={index} todo={todo} heureRestante={todo.heure} />
+  ))
+
+  return <>
+    <h1>Nouvelle ToDo</h1>
+    <h2>{DATE.toLocaleString()}</h2>
+    <ul>{LIST_TODO}</ul>
+    <Form />
+    <Category
+      mission={mission} setMission={setMission}
+      professionel={professionel} setProfessionel={setProfessionel}
+      vacance={vacance} setVacance={setVacance}
+    />
+  </>
 }
 
 export default App;
