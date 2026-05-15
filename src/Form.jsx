@@ -1,12 +1,13 @@
-function Form({onSubmit}){
-  function handleChange(e){
-    console.log(e.target.value)
-  }
-  return <form onSubmit={onSubmit}>
-    <input onChange={e=>handleChange(e)} type='text' placeholder='La ToDO' />
-    <input onChange={e=>handleChange(e)} type='text' placeholder='La Date'/>
-    <input type='submit'/>
-  </form>
+function Form({action, isPending}){
+    
+    return <form action={action}>
+        <input name="todo" type='text' placeholder='La ToDO' />
+        <input name="date" type='date' placeholder='La Date'/>
+        <input name="categorie" type='text' placeholder='La Catégorie'/>
+        <button type='submit' disabled={isPending}>
+            {isPending ? "Ajout en cours..." : "Ajouter"}
+        </button>
+    </form>
 }
 
 export default Form

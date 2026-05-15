@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { useActionState } from 'react' 
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import Form from './Form'
+import ToDo from './Todo.jsx'
 import './App.css'
 
 
@@ -27,42 +29,6 @@ const TODOS = [
     }
   ]
 
-function ToDo({todo}) {
-
-  const [heure, setHeure] = useState( todo.heure )
-
-  function handleClick() {
-    // alert(todo.todo)
-  }
-  function handleClickMinus(){
-    if (heure > 0){
-      setHeure(heure - 1)   
-  }
-}
-  function handleClickPlus(){
-    setHeure(heure + 1)
-  }
-
-  if(heure == 0){
-    return <li className='green'><button onClick={handleClickMinus}>-</button><button onClick={handleClickPlus}>+</button><input type='checkbox' defaultChecked/>{todo.todo} - {todo.date} : {heure} heure restante</li>
-  }
-  return <li className='orange'><button onClick={handleClickMinus}>-</button><button onClick={handleClickPlus}>+</button>{todo.todo} - {todo.date} : {heure} heure restante</li>
-}
-
-//   if (todo.checked) {
-//     return (
-//       <li className='green' onClick={handleClick}>
-//         <input type='checkbox' defaultChecked />
-//         <button onClick={handleClickMinus}>-</button>
-//         {heure}  
-//         <button onClick={handleClickPlus}>+</button>
-//         {todo.todo} - {todo.date} - {todo.category} à faire dans : {heure} 
-//       </li>
-//     )
-//   }
-//   return <li className='orange' onClick={handleClick}>{todo.todo} - {todo.date} - {todo.category}</li>
-// }
-
 function Category({mission, setMission, professionel, setProfessionel, vacance, setVacance}){
   return <section>
       <label><input type="checkbox" checked={mission} onChange={()=>setMission(!mission)}/> mission</label>
@@ -71,30 +37,30 @@ function Category({mission, setMission, professionel, setProfessionel, vacance, 
     </section> 
 }
 
-
-
-
-
-// function ToDoTernaire({todo, date, checked}) {
-  //   return <li className={checked ? "green" : 'orange'} ><input type='checkbox' checked={checked} defaultChecked/>{todo} {date} </li> 
-  // }
-  
-  // function ToDoAnd({todo, date, checked}){
-    //   return <li>
-    //     {todo} {date}
-    //     {checked && (
-      //       <input type="checkbox" defaultChecked />
-      //     )}   
-      //   </li>
-      // }
       
-      function App() {
-        const DATE = new Date()
+function App() {
+  const DATE = new Date()
   const [vacance, setVacance] = useState(true)
   const [mission, setMission] = useState(true)
   const [professionel, setProfessionel] = useState(true)
-  
-  const TODOLIST = TODOS.filter(e => {
+  const [todos, formAction, isPending] = useActionState(addTodoAction, TODOS)
+
+  async function addTodoAction(previousState, formData) {
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    const todo = formData.get('todo')
+    const date = formData.get('date')
+    const categorie = formData.get('categorie')
+    const NEWTODO = {
+      todo,
+      date,
+      checked: false,
+      heure: 0,
+      categorie
+    }
+    return [...previousState, NEWTODO]
+  }
+
+  const TODOLIST = todos.filter(e => {
     if (e.category == 'vacance' && !vacance) return false
     if (e.category == 'professionel' && !professionel) return false
     if (e.category == 'mission' && !mission) return false
@@ -105,17 +71,11 @@ function Category({mission, setMission, professionel, setProfessionel, vacance, 
     <ToDo key={index} todo={todo} heureRestante={todo.heure} />
   ))
   
-    function handleSubmit(e){
-      e.preventDefault()
-      const INPUTS = document.querySelectorAll('input[type=text]')
-      INPUTS.forEach(input=>(console.log(input.value)))
-    }
-
   return <>
     <h1>Nouvelle ToDo</h1>
     <h2>{DATE.toLocaleString()}</h2>
     <ul>{LIST_TODO}</ul>
-    <Form onSubmit={event => handleSubmit(event)}/>
+    <Form action={formAction} isPending={isPending}/>
     <Category
       mission={mission} setMission={setMission}
       professionel={professionel} setProfessionel={setProfessionel}
